@@ -5,27 +5,27 @@ import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
+public class Squaree {
 
-public class Triangle {
-
-    //Definindo as formas
     private FloatBuffer vertexBuffer;
+    private ShortBuffer drawListBuffer;
 
-    // número de coordenadas por vértice nessa matriz
     static final int COORDS_PER_VERTEX = 3;
-    static float triangleCoords[] = {   // no sentido anti-horário:
-            0.0f,  0.622008459f, 0.0f, // top
-            -0.5f, -0.311004243f, 0.0f, // bottom left
-            0.5f, -0.311004243f, 0.0f  // bottom right
-    };
+    static float squareCoords[] = {
+            -0.5f,  0.5f, 0.0f,  // top left
+            0.5f, 0.5f, 0.0f,  // bottom left
+            0.5f, -0.5f, 0.0f, // bottom right
+            -0.5f,  -0.5f, 0.0f }; // top right
 
-    // Definir cor com os valores vermelho, verde, azul e alfa (opacidade)
+    private short drawOrder[] = { 3, 2, 0, 2, 1, 0 };
+
     float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
 
     private final int mProgram;
 
-    public Triangle() {
+    public Squaree() {
 
         int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
@@ -42,24 +42,25 @@ public class Triangle {
 
         // inicializa o buffer de bytes de vértice para coordenadas de forma
         ByteBuffer bb = ByteBuffer.allocateDirect(
-                // (número de valores de coordenadas * 4 bytes por float)
-                triangleCoords.length * 4);
-        // use a ordem de bytes nativa do hardware do dispositivo
+                squareCoords.length * 4);
         bb.order(ByteOrder.nativeOrder());
-
-        // cria um buffer de ponto flutuante a partir do ByteBuffer
         vertexBuffer = bb.asFloatBuffer();
-        // adiciona as coordenadas ao FloatBuffer
-        vertexBuffer.put(triangleCoords);
-        // define o buffer para ler a primeira coordenada
+        vertexBuffer.put(squareCoords);
         vertexBuffer.position(0);
+
+        ByteBuffer dlb = ByteBuffer.allocateDirect(
+                drawOrder.length * 2);
+        dlb.order(ByteOrder.nativeOrder());
+        drawListBuffer = dlb.asShortBuffer();
+        drawListBuffer.put(drawOrder);
+        drawListBuffer.position(0);
     }
 
     //Metodo draw() para desenhar a forma
     private int positionHandle;
     private int colorHandle;
 
-    private final int vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
+    private final int vertexCount = squareCoords.length / COORDS_PER_VERTEX;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
     public void draw() {
@@ -95,5 +96,4 @@ public class Triangle {
                     "void main() {" +
                     "  gl_FragColor = vColor;" +
                     "}";
-
 }

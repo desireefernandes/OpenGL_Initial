@@ -8,19 +8,25 @@ import android.opengl.GLSurfaceView;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
-    private Triangle mTriangle;
+    //private Triangle mTriangle;
+    private Square mSquare;
+    private Squaree mSqueree;
 
     public void onSurfaceCreated (GL10 unused, EGLConfig config) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        mTriangle = new Triangle();
+        // mTriangle = new Triangle();
+        mSquare = new Square();
+        mSqueree = new Squaree();
 
     }
 
     public void onDrawFrame(GL10 unused) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-        mTriangle.draw();
+       // mTriangle.draw();
+        mSquare.draw();
+        mSqueree.draw();
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {

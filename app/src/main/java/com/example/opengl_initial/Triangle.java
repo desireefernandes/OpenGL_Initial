@@ -71,7 +71,7 @@ public class Triangle {
     //ATENÇÃO A ESSA LINHA
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes por vertex
 
-    public void draw() {
+    public void draw(float[] mvpMatrix ) {
         GLES20.glUseProgram(mProgram);
 
         positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
@@ -84,13 +84,21 @@ public class Triangle {
         GLES20.glUniform4fv(colorHandle, 1, color, 0);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
         GLES20.glDisableVertexAttribArray(positionHandle);
+
+        vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+        GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+        GLES20.glDisableVertexAttribArray(positionHandle);
+
     }
 
+    private int vPMatrixHandle;
     //Desenha a forma
     private final String vertexShaderCode =
+            "uniform mat4 uMVPMatrix;" +
             "attribute vec4 vPosition;" +
                     "void main() {" +
-                    "  gl_Position = vPosition;" +
+                    "  gl_Position = uMVPMatrix * vPosition;" +
                     "}";
 
     private final String fragmentShaderCode =

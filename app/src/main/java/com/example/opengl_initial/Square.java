@@ -75,7 +75,7 @@ public class Square {
     private final int vertexCount = squareCoords.length / COORDS_PER_VERTEX;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes por vertex
 
-    public void draw(float[] mvpMatrix ) {
+    public void draw(float[] mvpMatrix) {
         GLES20.glUseProgram(mProgram);
 
         positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");

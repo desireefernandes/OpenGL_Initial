@@ -6,6 +6,7 @@ import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.os.SystemClock;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
     //private Triangle mTriangle;
@@ -29,19 +30,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                 new float[] {
                         -0.5f,  0.5f, 0.0f,
                         -0.5f, -0.5f, 0.0f,
-                         0.5f, -0.5f, 0.0f,
-                         0.5f,  0.5f, 0.0f },
+                        0.5f, -0.5f, 0.0f,
+                        0.5f,  0.5f, 0.0f },
 
                 new short[] { 0, 1, 2, 0, 2, 3 },
 
                 new float[] { 0.431353f, 0.168194f, 0.800000f, 1.0f }
-                );
+        );
 
         mSqueree = new Squaree(
                 new float[] {
                         -0.5f,  0.5f, 0.0f,
-                         0.5f,  0.5f, 0.0f,
-                         0.5f, -0.5f, 0.0f,
+                        0.5f,  0.5f, 0.0f,
+                        0.5f, -0.5f, 0.0f,
                         -0.5f, -0.5f, 0.0f },
 
                 new short[] { 0, 1, 2, 0, 2, 3 },
@@ -51,15 +52,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     }
 
+    private float[] rotationMatrix = new float[16];
     public void onDrawFrame(GL10 unused) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        float[] scratch = new float[16];
 
+        long time = SystemClock.uptimeMillis() % 4000L;
+        float angle = 0.090f * ((int) time);
+        Matrix.setRotateM(rotationMatrix, 0, angle, 0, 0, -1.0f);
         Matrix.setLookAtM(viewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0);
 
         //mTriangle.draw(vPMatrix);
-        mSquare.draw(vPMatrix);
-        mSqueree.draw(vPMatrix);
+        mSquare.draw(scratch);
+        mSqueree.draw(scratch);
 
     }
 

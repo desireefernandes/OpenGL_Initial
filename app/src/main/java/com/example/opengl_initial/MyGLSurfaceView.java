@@ -3,7 +3,7 @@ package com.example.opengl_initial;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 
-class MyGLSurfaceView extends GLSurfaceView {
+public class MyGLSurfaceView extends GLSurfaceView {
 
     private final MyGLRenderer renderer;
 
@@ -15,5 +15,10 @@ class MyGLSurfaceView extends GLSurfaceView {
         renderer = new MyGLRenderer();
 
         setRenderer(renderer);
+
+        // Renderiza uma vista somente quando houver alterações nos dados do desenho.
+        // Para permitir que o desenho gire automaticamente, esta linha é comentada:
+        //setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
     }
 }

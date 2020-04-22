@@ -57,9 +57,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         float[] scratch = new float[16];
 
-        long time = SystemClock.uptimeMillis() % 4000L;
-        float angle = 0.090f * ((int) time);
-        Matrix.setRotateM(rotationMatrix, 0, angle, 0, 0, -1.0f);
+        //long time = SystemClock.uptimeMillis() % 4000L;
+        //float angle = 0.090f * ((int) time);
+
+        //Matrix.setRotateM(rotationMatrix, 0, angle, 0, 0, -1.0f);
+        Matrix.setRotateM(rotationMatrix, 0, mAngle, 0, 0, -1.0f);
         Matrix.setLookAtM(viewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
         Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0);
@@ -92,6 +94,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glCompileShader(shader);
 
         return shader;
+    }
+
+
+    public volatile float mAngle;
+
+    public float getAngle() {
+        return mAngle;
+    }
+
+    public void setAngle(float angle) {
+        mAngle = angle;
     }
 
 }

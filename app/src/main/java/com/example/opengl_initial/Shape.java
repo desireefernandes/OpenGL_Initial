@@ -5,37 +5,43 @@ import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
-public class Triangle {
-    //Definindo as formas
+public class Shape {
     private FloatBuffer vertexBuffer;
+    private ShortBuffer drawListBuffer;
 
-    //Número de coordenadas por vértice nessa matriz
     static final int COORDS_PER_VERTEX = 3;
-
     private final int mProgram;
 
     //ATRIBUTOS
     //Coordenadas
-    private float triangleCoords[] = new float[9];
+    private float shapeCoords[] = new float[18];
+    //Ordem
+    private short drawOrder[] = new short[6];
     //Cor
     private float color[] = new float[4];
 
     //METODO SET
     //Coordenadas
-    public void setTriangleCoords(float[] triangleCoords) {
-        this.triangleCoords = triangleCoords;
+    public void setShapeCoords(float[] shapeCoords) {
+        this.shapeCoords = shapeCoords;
     }
+
+    //Ordem
+    public void setDrawOrder(short[] drawOrder) {
+        this.drawOrder = drawOrder;
+    }
+
     //Cor
     public void setColor(float[] color) {
         this.color = color;
     }
 
-
     //CONSTRUCTOR
-    public Triangle(float[] triangleCoords, float[] color) {
-
-        this.setTriangleCoords(triangleCoords);
+    public Shape(float[] shapeCoords, short[] drawOrder, float[] color) {
+        this.setShapeCoords(shapeCoords);
+        this.setDrawOrder(drawOrder);
         this.setColor(color);
 
         int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
@@ -50,28 +56,27 @@ public class Triangle {
 
         // inicializa o buffer de bytes de vértice para coordenadas de forma
         ByteBuffer bb = ByteBuffer.allocateDirect(
-                // (número de valores de coordenadas * 4 bytes por float)
-                triangleCoords.length * 4);
-        // use a ordem de bytes nativa do hardware do dispositivo
+                shapeCoords.length * 4);
         bb.order(ByteOrder.nativeOrder());
-
-        // cria um buffer de ponto flutuante a partir do ByteBuffer
         vertexBuffer = bb.asFloatBuffer();
-        // adiciona as coordenadas ao FloatBuffer
-        vertexBuffer.put(triangleCoords);
-        // define o buffer para ler a primeira coordenada
+        vertexBuffer.put(shapeCoords);
         vertexBuffer.position(0);
+
+        ByteBuffer dlb = ByteBuffer.allocateDirect(
+                drawOrder.length * 2);
+        dlb.order(ByteOrder.nativeOrder());
+        drawListBuffer = dlb.asShortBuffer();
+        drawListBuffer.put(drawOrder);
+        drawListBuffer.position(0);
     }
 
     //Metodo draw() para desenhar a forma
     private int positionHandle;
     private int colorHandle;
-
-    private final int vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
-    //ATENÇÃO A ESSA LINHA
+    private final int vertexCount = shapeCoords.length / COORDS_PER_VERTEX;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes por vertex
 
-    public void draw(float[] mvpMatrix ) {
+    public void draw(float[] mvpMatrix) {
         GLES20.glUseProgram(mProgram);
 
         positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
@@ -82,12 +87,10 @@ public class Triangle {
 
         colorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
         GLES20.glUniform4fv(colorHandle, 1, color, 0);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
-        GLES20.glDisableVertexAttribArray(positionHandle);
 
         vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
         GLES20.glDisableVertexAttribArray(positionHandle);
 
     }
@@ -96,7 +99,7 @@ public class Triangle {
     //Desenha a forma
     private final String vertexShaderCode =
             "uniform mat4 uMVPMatrix;" +
-            "attribute vec4 vPosition;" +
+                    "attribute vec4 vPosition;" +
                     "void main() {" +
                     "  gl_Position = uMVPMatrix * vPosition;" +
                     "}";

@@ -6,53 +6,34 @@ import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.os.SystemClock;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
-    //private Triangle mTriangle;
-    private Square mSquare;
-    private Squaree mSqueree;
+    private Shape mShape;
 
-    public void onSurfaceCreated (GL10 unused, EGLConfig config) {
+    public void onSurfaceCreated(GL10 unused, EGLConfig config) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        /*
-         mTriangle = new Triangle (
-                //Coordenadas
-                new float[] {
-                         0.0f,  0.622008459f, 0.0f,
-                        -0.5f, -0.311004243f, 0.0f,
-                         0.5f, -0.311004243f, 0.0f },
-                //Cor
-                new float[] {0.431353f, 0.168194f, 0.800000f, 1.0f}
-                );
-         */
-        mSquare = new Square(
-                new float[] {
+        
+        //Ao modificar as coodenadas da forma, modifique também o tamanho do array na classe
+        mShape = new Shape(
+                new float[]{
+                        //  X      Y     Z
                         -0.5f,  0.5f, 0.0f,
+                        -0.5f,  0.5f, 0.0f,
+                         0.5f,  0.5f, 0.0f,
+                         0.5f, -0.5f, 0.0f,
                         -0.5f, -0.5f, 0.0f,
-                        0.5f, -0.5f, 0.0f,
-                        0.5f,  0.5f, 0.0f },
+                        -0.5f,  0.5f, 0.0f
+                },
 
-                new short[] { 0, 1, 2, 0, 2, 3 },
+                new short[]{0, 1, 2, 0, 2, 3},
 
-                new float[] { 0.431353f, 0.168194f, 0.800000f, 1.0f }
-        );
-
-        mSqueree = new Squaree(
-                new float[] {
-                        -0.5f,  0.5f, 0.0f,
-                        0.5f,  0.5f, 0.0f,
-                        0.5f, -0.5f, 0.0f,
-                        -0.5f, -0.5f, 0.0f },
-
-                new short[] { 0, 1, 2, 0, 2, 3 },
-
-                new float[] { 0.431353f, 0.168194f, 0.800000f, 1.0f }
+                new float[]{0.431353f, 0.168194f, 0.800000f, 1.0f}
         );
 
     }
 
     private float[] rotationMatrix = new float[16];
+
     public void onDrawFrame(GL10 unused) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         float[] scratch = new float[16];
@@ -66,9 +47,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
         Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0);
 
-        //mTriangle.draw(vPMatrix);
-        mSquare.draw(scratch);
-        mSqueree.draw(scratch);
+        mShape.draw(scratch);
 
     }
 
@@ -86,7 +65,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     }
 
     //Metodo utilitário para compilar o GLSL
-    public static int loadShader(int type, String shaderCode){
+    public static int loadShader(int type, String shaderCode) {
 
         int shader = GLES20.glCreateShader(type);
 

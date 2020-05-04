@@ -12,7 +12,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        
+
         //Ao modificar as coodenadas da forma, modifique também o tamanho do array na classe
         mShape = new Shape(
                 new float[]{

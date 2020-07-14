@@ -10,6 +10,14 @@ import android.opengl.Matrix;
 public class MyGLRenderer implements GLSurfaceView.Renderer {
     private Shape mShape;
 
+    private float[] rotationMatrix = new float[16];
+
+    private final float[] vPMatrix = new float[16];
+    private final float[] projectionMatrix = new float[16];
+    private final float[] viewMatrix = new float[16];
+
+    public volatile float mAngle;
+
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -32,8 +40,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     }
 
-    private float[] rotationMatrix = new float[16];
-
     public void onDrawFrame(GL10 unused) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         float[] scratch = new float[16];
@@ -50,10 +56,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mShape.draw(scratch);
 
     }
-
-    private final float[] vPMatrix = new float[16];
-    private final float[] projectionMatrix = new float[16];
-    private final float[] viewMatrix = new float[16];
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
@@ -74,9 +76,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         return shader;
     }
-
-
-    public volatile float mAngle;
 
     public float getAngle() {
         return mAngle;

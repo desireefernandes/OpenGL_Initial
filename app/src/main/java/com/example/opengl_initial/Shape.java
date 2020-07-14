@@ -14,6 +14,8 @@ public class Shape {
     static final int COORDS_PER_VERTEX = 3;
     private final int mProgram;
 
+    private int vPMatrixHandle;
+
     //ATRIBUTOS
     //Coordenadas
     private float shapeCoords[] = new float[18];
@@ -27,16 +29,19 @@ public class Shape {
     public void setShapeCoords(float[] shapeCoords) {
         this.shapeCoords = shapeCoords;
     }
-
     //Ordem
     public void setDrawOrder(short[] drawOrder) {
         this.drawOrder = drawOrder;
     }
-
     //Cor
     public void setColor(float[] color) {
         this.color = color;
     }
+
+    private int positionHandle;
+    private int colorHandle;
+    private final int vertexCount = shapeCoords.length / COORDS_PER_VERTEX;
+    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes por vertex
 
     //CONSTRUCTOR
     public Shape(float[] shapeCoords, short[] drawOrder, float[] color) {
@@ -70,12 +75,22 @@ public class Shape {
         drawListBuffer.position(0);
     }
 
-    //Metodo draw() para desenhar a forma
-    private int positionHandle;
-    private int colorHandle;
-    private final int vertexCount = shapeCoords.length / COORDS_PER_VERTEX;
-    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes por vertex
+    //Shader
+    private final String vertexShaderCode =
+            "uniform mat4 uMVPMatrix;" +
+                    "attribute vec4 vPosition;" +
+                    "void main() {" +
+                    "  gl_Position = uMVPMatrix * vPosition;" +
+                    "}";
 
+    private final String fragmentShaderCode =
+            "precision mediump float;" +
+                    "uniform vec4 vColor;" +
+                    "void main() {" +
+                    "  gl_FragColor = vColor;" +
+                    "}";
+
+    //Metodo draw() para desenhar a forma
     public void draw(float[] mvpMatrix) {
         GLES20.glUseProgram(mProgram);
 
@@ -94,21 +109,5 @@ public class Shape {
         GLES20.glDisableVertexAttribArray(positionHandle);
 
     }
-
-    private int vPMatrixHandle;
-    //Desenha a forma
-    private final String vertexShaderCode =
-            "uniform mat4 uMVPMatrix;" +
-                    "attribute vec4 vPosition;" +
-                    "void main() {" +
-                    "  gl_Position = uMVPMatrix * vPosition;" +
-                    "}";
-
-    private final String fragmentShaderCode =
-            "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "void main() {" +
-                    "  gl_FragColor = vColor;" +
-                    "}";
 
 }
